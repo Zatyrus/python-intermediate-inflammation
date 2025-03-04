@@ -19,7 +19,6 @@ def main(args):
     if not isinstance(infiles, list):
         infiles = [args.infiles]
 
-
     if args.full_data_analysis:
         analyse_data(os.path.dirname(infiles[0]))
         return
@@ -28,9 +27,9 @@ def main(args):
         inflammation_data = models.load_csv(filename)
 
         view_data = {
-            'average': models.daily_mean(inflammation_data),
-            'max': models.daily_max(inflammation_data),
-            'min': models.daily_min(inflammation_data)
+            "average": models.daily_mean(inflammation_data),
+            "max": models.daily_max(inflammation_data),
+            "min": models.daily_min(inflammation_data),
         }
 
         views.visualize(view_data)
@@ -38,17 +37,18 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description='A basic patient inflammation data management system')
+        description="A basic patient inflammation data management system"
+    )
 
     parser.add_argument(
-        'infiles',
-        nargs='+',
-        help='Input CSV(s) containing inflammation series for each patient')
+        "infiles",
+        nargs="+",
+        help="Input CSV(s) containing inflammation series for each patient",
+    )
 
     parser.add_argument(
-        '--full-data-analysis',
-        action='store_true',
-        dest='full_data_analysis')
+        "--full-data-analysis", action="store_true", dest="full_data_analysis"
+    )
 
     args = parser.parse_args()
 
