@@ -113,3 +113,28 @@ def test_patient_normalise(test, expected, expect_raises):
     else:
         result = patient_normalise(np.array(test))
         npt.assert_allclose(result, np.array(expected), rtol=1e-2, atol=1e-2)
+
+
+def test_reader():
+    """Test that Reader class can read in
+    multiple files and return the data."""
+    from inflammation.models import Reader
+
+    test_input = ["data/inflammation-01.csv", "data/inflammation-02.csv"]
+    test_result = {
+        "data/inflammation-01.csv": np.loadtxt(
+            "data/inflammation-01.csv", delimiter=","
+        ),
+        "data/inflammation-02.csv": np.loadtxt(
+            "data/inflammation-02.csv", delimiter=","
+        ),
+    }
+
+    reader = Reader(test_input)
+    reader.read()
+
+    for key, value in reader.data_out.items():
+        npt.assert_array_equal(value, test_result[key])
+
+    for key, known_key in zip(reader.data_out.keys(), test_result.keys()):
+        npt.assert_string_equal(key, known_key)
