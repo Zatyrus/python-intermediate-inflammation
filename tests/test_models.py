@@ -5,7 +5,13 @@ import pytest
 
 import numpy.testing as npt
 
-from inflammation.models import daily_mean, daily_min, daily_max, load_csv
+from inflammation.models import (
+    daily_mean,
+    daily_min,
+    daily_max,
+    load_csv,
+    patient_normalise,
+)
 
 
 def test_daily_mean_zeros():
@@ -52,9 +58,7 @@ def test_daily_min_string():
     """Test that min function works for an array of strings."""
 
     with pytest.raises(TypeError):
-        daily_min(
-            np.array([["Hello", "there"], ["General", "Kenobi"]])
-        )
+        daily_min(np.array([["Hello", "there"], ["General", "Kenobi"]]))
 
 
 # %% Parametrized Tests
@@ -75,3 +79,37 @@ def test_load_csv_missing_file():
     """Test that the load_csv function raises an exception for a missing file."""
     with pytest.raises(FileNotFoundError):
         load_csv("data/nonexistent-file.csv")
+
+
+@pytest.mark.parametrize(
+    "test, expected, expect_raises",
+    [
+        ([[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0]], None),
+        ([[1, 1, 1], [1, 1, 1], [1, 1, 1]], [[1, 1, 1], [1, 1, 1], [1, 1, 1]], None),
+        (
+            [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+            [[0.33, 0.67, 1], [0.67, 0.83, 1], [0.78, 0.89, 1]],
+            None,
+        ),
+        (
+            [[-1, 2, 3], [4, 5, 6], [7, 8, 9]],
+            [[0, 0.67, 1], [0.67, 0.83, 1], [0.78, 0.89, 1]],
+            ValueError,
+        ),
+        (
+            [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+            [[0.33, 0.67, 1], [0.67, 0.83, 1], [0.78, 0.89, 1]],
+            None,
+        ),
+    ],
+)
+def test_patient_normalise(test, expected, expect_raises):
+    """Test normalisation works for arrays of one and positive integers."""
+
+    if expect_raises is not None:
+        with pytest.raises(expect_raises):
+            result = patient_normalise(np.array(test))
+            npt.assert_allclose(result, np.array(expected), rtol=1e-2, atol=1e-2)
+    else:
+        result = patient_normalise(np.array(test))
+        npt.assert_allclose(result, np.array(expected), rtol=1e-2, atol=1e-2)
