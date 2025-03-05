@@ -3,7 +3,6 @@
 import numpy as np
 import pytest
 
-import subprocess
 import numpy.testing as npt
 
 from inflammation.models import daily_mean, daily_min, daily_max, load_csv
@@ -53,7 +52,7 @@ def test_daily_min_string():
     """Test that min function works for an array of strings."""
 
     with pytest.raises(TypeError):
-        error_expected = daily_min(
+        daily_min(
             np.array([["Hello", "there"], ["General", "Kenobi"]])
         )
 
@@ -69,7 +68,8 @@ def test_daily_min_string():
 def test_daily_mean(test, expected):
     """Test mean function works for array of zeroes and positive integers."""
     npt.assert_array_equal(daily_mean(np.array(test)), np.array(expected))
-    
+
+
 # %% Test for exceptions
 def test_load_csv_missing_file():
     """Test that the load_csv function raises an exception for a missing file."""
