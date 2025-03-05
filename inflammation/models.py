@@ -12,6 +12,7 @@ import numpy as np
 
 from typing import List, Dict, Any
 
+
 def load_csv(filename):
     """Load a Numpy array from a CSV
 
